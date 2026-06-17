@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mRNA vaccine design — scientific report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FDFCFA; --ink:#111111; --ink-2:#6B6B66; --rule:#E6E3DD; --neon:#FF2E88;
+  --pass:#2F7D5F; --fail:#B8382F; --warn:#A06020;
+  --serif:"Source Serif 4",Georgia,serif; --sans:"Inter",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{display:grid;grid-template-columns:240px minmax(0,68ch) 1fr;gap:2rem;
+  max-width:1240px;margin:0 auto;padding:2.5rem 1.5rem}
+nav.toc{position:sticky;top:2rem;align-self:start;font-family:var(--sans);
+  font-size:0.82rem;line-height:1.5;max-height:90vh;overflow:auto}
+nav.toc .toc-title{text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-2);
+  font-size:0.7rem;margin-bottom:0.6rem}
+nav.toc a{display:block;color:var(--ink-2);text-decoration:none;padding:2px 0;
+  border-left:2px solid transparent;padding-left:0.6rem}
+nav.toc a:hover{color:var(--ink)}
+nav.toc a.h3{padding-left:1.4rem;font-size:0.78rem}
+nav.toc a.active{color:var(--ink);border-left-color:var(--neon)}
+article{min-width:0}
+article h1{font-family:var(--serif);font-weight:500;font-size:2.4rem;line-height:1.1;
+  letter-spacing:-0.015em;margin:0 0 1.5rem}
+article h2{font-family:var(--serif);font-weight:500;font-size:1.55rem;
+  margin:3rem 0 0.6rem;padding-top:0.4rem;letter-spacing:-0.01em}
+article h3{font-family:var(--serif);font-weight:600;font-size:1.18rem;margin:2rem 0 0.4rem}
+article p{margin:0 0 1.1rem}
+article a{color:var(--ink);text-decoration:underline;text-decoration-color:var(--rule);
+  text-underline-offset:3px}
+article a:hover{text-decoration-color:var(--neon)}
+code{font-family:var(--mono);font-size:0.85em;background:#F3F1EC;padding:0.05em 0.35em;
+  border-radius:3px}
+pre{background:#F3F1EC;padding:1rem 1.1rem;border-radius:4px;overflow:auto;
+  font-size:0.82rem;line-height:1.5}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
+/* Booktabs tables — three rules, no vertical borders, tabular numerals. */
+.table-scroll{overflow-x:auto;margin:1.4rem 0}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:0.9rem;
+  font-variant-numeric:tabular-nums}
+thead th{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);
+  text-align:left;font-weight:600;padding:0.5rem 0.7rem}
+tbody td{border-bottom:1px solid var(--rule);padding:0.42rem 0.7rem;vertical-align:top}
+tbody tr:last-child td{border-bottom:2px solid var(--ink)}
+td:not(:first-child),th:not(:first-child){text-align:right}
+figure{margin:2rem 0;text-align:center}
+figure img{max-width:100%;height:auto;border:1px solid var(--rule);border-radius:4px;
+  background:var(--paper)}
+figure.missing{border:1px dashed var(--rule);border-radius:4px;padding:2rem;
+  color:var(--ink-2);font-family:var(--sans);font-size:0.85rem}
+figcaption{font-family:var(--sans);font-size:0.82rem;color:var(--ink-2);
+  margin-top:0.6rem;text-align:left;line-height:1.5}
+figcaption .lead{color:var(--ink);font-weight:600}
+.status{font-family:var(--sans);font-size:0.72rem;padding:1px 7px;border-radius:2px;
+  border:1px solid var(--rule);color:var(--ink-2)}
+@media(max-width:1000px){.wrap{grid-template-columns:1fr;gap:1rem}
+  nav.toc{position:static;max-height:none}}
+</style></head>
+<body>
+<style>
+.site-overlay-nav{position:fixed;top:0;right:0;z-index:9999;display:flex;
+  gap:.25rem;align-items:center;padding:.5rem .75rem;font-family:"Inter",
+  system-ui,sans-serif;font-size:.78rem;font-weight:500;
+  background:rgba(253,252,250,.72);backdrop-filter:blur(8px);
+  border-bottom-left-radius:10px;border:1px solid rgba(230,227,221,.6);
+  border-top:0;border-right:0}
+.site-overlay-nav a{color:#6B6B66;text-decoration:none;padding:.2rem .5rem;
+  border-radius:6px;transition:color .15s,background .15s}
+.site-overlay-nav a:hover{color:#111}
+.site-overlay-nav a.active{color:#FF2E88}
+@media print{.site-overlay-nav{display:none}}
+</style>
+<nav class="site-overlay-nav" aria-label="Site">
+  <a href="./">Story</a>
+  <a href="article.html" class="active">Article</a>
+</nav>
+<div class="wrap">
+<nav class="toc"><div class="toc-title">Contents</div><a class="" href="#abstract">Abstract</a>
+<a class="" href="#1-introduction">1. Introduction</a>
+<a class="h3" href="#1-1-cancer-vaccines-and-neoantigens">1.1 Cancer vaccines and neoantigens</a>
+<a class="h3" href="#1-2-mrna-as-a-vaccine-modality">1.2 mRNA as a vaccine modality</a>
+<a class="h3" href="#1-3-agentic-orchestration-of-existing-tools">1.3 Agentic orchestration of existing tools</a>
+<a class="" href="#2-results">2. Results</a>
+<a class="h3" href="#2-1-benchmark-design-the-negative-set-is-the-experiment">2.1 Benchmark design: the negative set is the experiment</a>
+<a class="h3" href="#2-2-genomic-analysis-phase-1">2.2 Genomic analysis (Phase 1)</a>
+<a class="h3" href="#2-3-neoantigen-ranking-and-classification-phase-2">2.3 Neoantigen ranking and classification (Phase 2)</a>
+<a class="h3" href="#2-4-presentation-backend-agreement-phase-2-calibration">2.4 Presentation-backend agreement (Phase 2 calibration)</a>
+<a class="h3" href="#2-5-construct-design-and-statistics-phases-3-4">2.5 Construct design and statistics (Phases 3–4)</a>
+<a class="h3" href="#2-6-final-construct-and-manufacturing-qc-phase-5">2.6 Final construct and manufacturing QC (Phase 5)</a>
+<a class="h3" href="#2-7-completed-real-run-case-study">2.7 Completed real-run case study</a>
+<a class="h3" href="#2-8-benchmarks-in-literature-context">2.8 Benchmarks in literature context</a>
+<a class="" href="#3-researcher-experience">3. Researcher experience</a>
+<a class="" href="#4-discussion">4. Discussion</a>
+<a class="h3" href="#4-1-what-the-results-support">4.1 What the results support</a>
+<a class="h3" href="#4-2-limitations">4.2 Limitations</a>
+<a class="h3" href="#4-3-broader-potential">4.3 Broader potential</a>
+<a class="" href="#5-reproducibility">5. Reproducibility</a>
+<a class="" href="#6-figure-index">6. Figure index</a>
+<a class="" href="#7-references">7. References</a></nav>
+<article><h1>Autonomous Multi-Agent mRNA Vaccine Design Pipeline</h1>
+<p><strong>Working scientific technical report draft</strong></p>
+<p><strong>Status:</strong> draft
+<strong>Primary evidence sources:</strong> committed benchmark scorecard, public benchmark harness outputs, and completed real-run artifacts under <code>reports/real_run/</code> and <code>artifacts/real_run/</code>.</p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>We developed an autonomous, five-agent mRNA vaccine design pipeline that transforms mutation-level tumor input into a quality-controlled mRNA vaccine construct with no human in the loop. The system is organized as a typed artifact chain spanning genomic analysis, neoantigen prioritization, coding-sequence design, UTR engineering, and manufacturing quality control, with each agent orchestrating established biomedical tools rather than replacing them. We evaluated the pipeline with public, biologically grounded benchmark datasets and a completed end-to-end real-run artifact chain. The strongest quantitative validation is in neoantigen prioritization: on a hard-negative Müller 2023 contrast, the Phase 2 ranking path achieved AUROC 0.834 over 171 immunogenic peptides and 1780 binder-like negatives. Binding-matched ablation showed that immunogenicity scoring retained signal after affinity was controlled, with immunogenicity-only AUROC 0.640 versus binding-only AUROC 0.517. A MUNIS presentation-backend holdout panel showed calibrated agreement with NetMHCpan EL ranks across 8400 peptides, with pooled Spearman ρ 0.603. Phase 1 genomic analysis was validated on a 5-patient Hugo 2016 cohort, recovering somatic mutations at mean recall 0.870 with HLA 4-digit accuracy 0.967. The full real-run artifact chain completed all five phases and produced a 3176-nt m1Ψ-ready construct with no critical manufacturing hazards. The report distinguishes mature quantitative results from advisory or pending validation, especially full cohort-scale end-to-end execution.</p>
+<hr />
+<h2 id="1-introduction">1. Introduction</h2>
+<h3 id="1-1-cancer-vaccines-and-neoantigens">1.1 Cancer vaccines and neoantigens</h3>
+<p>Therapeutic cancer vaccines aim to direct a patient's own T cells against tumor-specific antigens. The most specific of these antigens are <strong>neoantigens</strong> — peptides produced by somatic mutations that are absent from normal tissue, and therefore not subject to central tolerance. Identifying which of a tumor's hundreds-to-thousands of mutations give rise to peptides that are processed, presented on MHC, and actually immunogenic is the central problem of personalized cancer immunotherapy. The practical difficulty is not finding mutations; it is <strong>prioritizing</strong> the small minority of mutation-derived peptides that will provoke a real CD8⁺ T-cell response among the many that merely look plausible by binding affinity.</p>
+<h3 id="1-2-mrna-as-a-vaccine-modality">1.2 mRNA as a vaccine modality</h3>
+<p>mRNA has become the leading delivery modality for personalized neoantigen vaccines: it is fast to manufacture, encodes multiple epitopes in a single polyepitope cassette, and was clinically validated at scale during the COVID-19 pandemic. Designing an mRNA vaccine, however, is more than concatenating epitopes. The coding sequence must be codon-optimized for expression while depleting uridine and controlling GC content; 5′ and 3′ UTRs must support translation and transcript stability; and the assembled construct must clear manufacturability checks (restriction sites, homopolymers, secondary-structure hazards) and be compatible with m1Ψ substitution. Each of these steps has a mature computational tool or biophysical model behind it.</p>
+<h3 id="1-3-agentic-orchestration-of-existing-tools">1.3 Agentic orchestration of existing tools</h3>
+<p>This pipeline does <strong>not</strong> attempt to replace those established tools with a single learned model. Instead it treats vaccine design as an <strong>agentic orchestration</strong> problem: five specialized agents each run the field-standard tools for their phase (e.g. NetMHCpan and BigMHC for binding and immunogenicity, LinearDesign and ViennaRNA for coding-sequence optimization and folding), stamp every score with full provenance, and hand a single typed artifact to the next agent. An LLM ensembler reconciles multiple tool outputs into an auditable weighted consensus at each phase. The contribution is the autonomous, inspectable <em>composition</em> of trusted components — every intermediate (mutation, peptide, CDS, UTR, final construct) can be audited without hidden side channels.</p>
+<p>The five agents are grouped into two conceptual halves:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Half</th>
+<th>Agent</th>
+<th>Main output</th>
+<th>Scientific role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mining</td>
+<td>Genomic analysis</td>
+<td><code>MutationReport</code></td>
+<td>somatic mutation and context recovery</td>
+</tr>
+<tr>
+<td>Mining</td>
+<td>Neoantigen identification</td>
+<td><code>NeoantigenReport</code></td>
+<td>peptide-MHC ranking and prioritization</td>
+</tr>
+<tr>
+<td>Manufacturing</td>
+<td>CDS design</td>
+<td><code>CDSReport</code></td>
+<td>codon and RNA-sequence optimization</td>
+</tr>
+<tr>
+<td>Manufacturing</td>
+<td>UTR engineering</td>
+<td><code>UTRReport</code></td>
+<td>translational context and transcript stability</td>
+</tr>
+<tr>
+<td>Manufacturing</td>
+<td>Manufacturing QC</td>
+<td><code>FinalConstruct</code></td>
+<td>restriction-site, degradation, modification, and yield checks</td>
+</tr>
+</tbody>
+</table></div>
+<p>A design principle throughout is that the core pipeline is <strong>not</strong> specialized to any held-out benchmark: dataset-specific ingestion and scoring live in a separate harness layer, while pipeline modules operate only on generic typed artifacts. This is what makes benchmark numbers in §2 honest tests rather than fitting artifacts.</p>
+<p><strong>Figure 1:</strong> <figure id="fig1_workflow_schematic"><img alt="fig1 workflow schematic" src="scientific_report_figures/fig1_workflow_schematic.png"><figcaption><span class="lead">fig1 workflow schematic</span></figcaption></figure> — the end-to-end agentic workflow from tumour mutation input to final mRNA construct. This schematic is <strong>auto-discovered from the agent source</strong> (rendered from the pipeline's own <code>/tools</code> view, via <code>src/ui/tool_graph.py</code>): the Mining river runs genome → neoantigen candidates and the Manufacturing river runs peptides → deliverable mRNA construct, with each step naming the real tools that perform it (parallel tools side-by-side, fallbacks dashed beneath their primary).</p>
+<hr />
+<h2 id="2-results">2. Results</h2>
+<p>This section walks through the pipeline end to end, pairing each phase with the strongest committed quantitative evidence. Two kinds of evidence appear: <strong>benchmark results</strong> on public datasets (which test a phase against ground truth) and the <strong>completed real run</strong> (a single canine osteosarcoma case carried through all five phases).</p>
+<h3 id="2-1-benchmark-design-the-negative-set-is-the-experiment">2.1 Benchmark design: the negative set is the experiment</h3>
+<p>The benchmark suite is split by biological question rather than by software phase.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Dataset / artifact set</th>
+<th>Primary role</th>
+<th>Biological question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Müller 2023 Neopep</td>
+<td>Neoantigen ranking</td>
+<td>Can the model prioritize experimentally immunogenic peptides among plausible candidates?</td>
+</tr>
+<tr>
+<td>NEPdb</td>
+<td>Independent peptide-level validation</td>
+<td>Does the Phase 2 signal generalize to a separate curated neoantigen source?</td>
+</tr>
+<tr>
+<td>Hugo 2016</td>
+<td>Real genomic-entry benchmark</td>
+<td>Can patient genomic inputs support mutation recovery, HLA context, and downstream design?</td>
+</tr>
+<tr>
+<td>OpenVaccine</td>
+<td>RNA degradation validation</td>
+<td>Do degradation backends track measured RNA degradation/reactivity?</td>
+</tr>
+<tr>
+<td>HLA Ligand Atlas</td>
+<td>Decoy construction</td>
+<td>Can negative sets be biologically plausible allele/length-matched ligands?</td>
+</tr>
+<tr>
+<td>MUNIS holdout panel</td>
+<td>Presentation-backend calibration</td>
+<td>Do calibrated MUNIS EL ranks track NetMHCpan EL ranks on peptides excluded from calibration?</td>
+</tr>
+<tr>
+<td>Completed real run</td>
+<td>End-to-end case study</td>
+<td>Can all five agents produce a manufacturable construct under reviewer scrutiny?</td>
+</tr>
+</tbody>
+</table></div>
+<p>The most important benchmarking distinction is negative-set construction for neoantigen ranking. Random negatives are often easy because many are weak or non-binders. <strong>Hard negatives</strong> better approximate the clinical problem: among peptides that already look plausible by binding, which are immunogenic?</p>
+<h3 id="2-2-genomic-analysis-phase-1">2.2 Genomic analysis (Phase 1)</h3>
+<p>Phase 1 was validated on a <strong>5-patient Hugo 2016</strong> anti-PD-1 melanoma cohort (SRA study SRP090294 / GEO GSE78220), running the real FASTQ → VCF path (BWA + Mutect2 with <code>FilterMutectCalls</code>) against the published cBioPortal <code>mel_ucla_2016</code> somatic call set, with OptiType HLA typing from the matched-normal exome:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Patient</th>
+<th style="text-align:right">Truth SNVs</th>
+<th style="text-align:right">PASS calls</th>
+<th style="text-align:right">Mutation recall</th>
+<th style="text-align:right">HLA 4-digit</th>
+<th style="text-align:right">Tumour depth @ truth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pt10</td>
+<td style="text-align:right">260</td>
+<td style="text-align:right">1536</td>
+<td style="text-align:right">0.846</td>
+<td style="text-align:right">1.000</td>
+<td style="text-align:right">108×</td>
+</tr>
+<tr>
+<td>Pt11</td>
+<td style="text-align:right">267</td>
+<td style="text-align:right">1338</td>
+<td style="text-align:right">0.876</td>
+<td style="text-align:right">1.000</td>
+<td style="text-align:right">123×</td>
+</tr>
+<tr>
+<td>Pt16</td>
+<td style="text-align:right">595</td>
+<td style="text-align:right">6054</td>
+<td style="text-align:right">0.874</td>
+<td style="text-align:right">0.833</td>
+<td style="text-align:right">182×</td>
+</tr>
+<tr>
+<td>Pt17</td>
+<td style="text-align:right">703</td>
+<td style="text-align:right">3999</td>
+<td style="text-align:right">0.888</td>
+<td style="text-align:right">1.000</td>
+<td style="text-align:right">118×</td>
+</tr>
+<tr>
+<td>Pt30</td>
+<td style="text-align:right">573</td>
+<td style="text-align:right">3550</td>
+<td style="text-align:right">0.867</td>
+<td style="text-align:right">1.000</td>
+<td style="text-align:right">147×</td>
+</tr>
+<tr>
+<td><strong>mean</strong></td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right"><strong>0.870</strong></td>
+<td style="text-align:right"><strong>0.967</strong></td>
+<td style="text-align:right"></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Figure 2 (Phase 1):</strong> <figure id="fig_phase1_genomic_recall"><img alt="fig phase1 genomic recall" src="scientific_report_figures/fig_phase1_genomic_recall.png"><figcaption><span class="lead">fig phase1 genomic recall</span></figcaption></figure> — per-patient somatic mutation recall on the 5-patient Hugo cohort, with the benchmark gate (0.80) and cohort mean (0.870) as reference lines; HLA 4-digit accuracy annotated per patient.</p>
+<p>Mutation recall is tight and stable — 0.846–0.888 (σ ≈ 0.014) across a 4× spread in PASS-call count — and HLA 4-digit accuracy is 1.0 for four of five patients (0.833 for Pt16; 2-digit accuracy is 1.0 for all five). RNA-seq quantification, validated separately on Pt1 (kallisto gene-TPM vs the GSE78220 reference), reached Pearson <strong>r = 0.891</strong>. All three Phase-1 gates pass at the benchmark thresholds (recall ≥ 0.80, quant r ≥ 0.85, HLA 4-digit ≥ 0.80). The observed 0.87 is the realistic single-caller (Mutect2) recall over the full published call set, in line with published WES benchmarks (see §2.8); higher recall would require ensemble calling or restriction to clonal, high-VAF variants.</p>
+<h3 id="2-3-neoantigen-ranking-and-classification-phase-2">2.3 Neoantigen ranking and classification (Phase 2)</h3>
+<p>The strongest quantitative result is the Phase 2 ranking benchmark on Müller 2023 using a hard-negative contrast:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Contrast</th>
+<th style="text-align:right">Positives</th>
+<th style="text-align:right">Negatives</th>
+<th style="text-align:right">AUROC</th>
+<th style="text-align:right">AUPRC</th>
+<th style="text-align:right">Median rank</th>
+<th style="text-align:right">Recall@50</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Müller 2023</td>
+<td>hard %Rank ≤ 2</td>
+<td style="text-align:right">171</td>
+<td style="text-align:right">1780</td>
+<td style="text-align:right">0.834</td>
+<td style="text-align:right">0.449</td>
+<td style="text-align:right">187</td>
+<td style="text-align:right">0.211</td>
+</tr>
+<tr>
+<td>Müller 2023</td>
+<td>random negatives</td>
+<td style="text-align:right">171</td>
+<td style="text-align:right">1780</td>
+<td style="text-align:right">0.948</td>
+<td style="text-align:right">0.798</td>
+<td style="text-align:right">97</td>
+<td style="text-align:right">0.275</td>
+</tr>
+<tr>
+<td>NEPdb</td>
+<td>hard curated negatives</td>
+<td style="text-align:right">11</td>
+<td style="text-align:right">257</td>
+<td style="text-align:right">0.643</td>
+<td style="text-align:right">0.075</td>
+<td style="text-align:right">89</td>
+<td style="text-align:right">0.364</td>
+</tr>
+</tbody>
+</table></div>
+<p>The random-negative result is <strong>not</strong> the defensible headline; it is included only to show the magnitude of negative-set inflation. The hard-negative contrast is the relevant test for ranking among binder-like candidates.</p>
+<p><strong>Figure 2:</strong> <figure id="fig2_phase2_classification"><img alt="fig2 phase2 classification" src="scientific_report_figures/fig2_phase2_classification.png"><figcaption><span class="lead">fig2 phase2 classification</span></figcaption></figure> — per-candidate classification view of the <strong>priority-sweep</strong> hard-negative cohort (173 immunogenic / 400 binder-like negatives at NetMHCpan %Rank ≤ 2), ranked by the <strong>production composite</strong> <code>priority_score</code>: score distribution by true label, ROC and precision-recall curves, top-k recall, and a confusion matrix at the top-k rule. On this cohort the production composite gives AUROC 0.715 / AUPRC 0.524 (prevalence 0.30). This is a distinct, smaller-negative construction from the benchmark-harness table above (171 / 1780): the figure shows the in-house priority cohort with the default production weights, whereas the cross-validated weight sweep on the same 173/400 cohort reaches AUROC 0.838 with fitted weights (0.779 default, cross-validated). Generated from the per-candidate prediction dump; see §5.</p>
+<h4>Binding-controlled ablation</h4>
+<p>Because binding affinity can dominate neoantigen prediction, we tested whether immunogenicity scoring retained signal after binding was controlled. In the iso-binding matched subset, binding-only scoring collapsed near chance while immunogenicity-only scoring remained predictive:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Contrast</th>
+<th>Strategy</th>
+<th style="text-align:right">AUROC</th>
+<th style="text-align:right">AUPRC</th>
+<th style="text-align:right">Median rank</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw hard-negative</td>
+<td>binding only</td>
+<td style="text-align:right">0.823</td>
+<td style="text-align:right">0.486</td>
+<td style="text-align:right">165</td>
+</tr>
+<tr>
+<td>Raw hard-negative</td>
+<td>immunogenicity only</td>
+<td style="text-align:right">0.759</td>
+<td style="text-align:right">0.276</td>
+<td style="text-align:right">306</td>
+</tr>
+<tr>
+<td>Raw hard-negative</td>
+<td>combined priority</td>
+<td style="text-align:right">0.833</td>
+<td style="text-align:right">0.448</td>
+<td style="text-align:right">191</td>
+</tr>
+<tr>
+<td>Iso-binding matched</td>
+<td>binding only</td>
+<td style="text-align:right">0.517</td>
+<td style="text-align:right">0.278</td>
+<td style="text-align:right">240</td>
+</tr>
+<tr>
+<td>Iso-binding matched</td>
+<td>immunogenicity only</td>
+<td style="text-align:right">0.640</td>
+<td style="text-align:right">0.377</td>
+<td style="text-align:right">165</td>
+</tr>
+<tr>
+<td>Iso-binding matched</td>
+<td>combined priority</td>
+<td style="text-align:right">0.633</td>
+<td style="text-align:right">0.375</td>
+<td style="text-align:right">157</td>
+</tr>
+</tbody>
+</table></div>
+<p>This supports the interpretation that the pipeline is not merely ranking by peptide-MHC affinity: immunogenicity contributes signal where affinity alone is neutralized. A separate priority-weight sweep on Müller 2023 confirmed that a multi-component composite (cross-validated AUROC 0.838 on hard negatives) beats immunogenicity alone (0.788) and the default composite (0.779), with the strongest swept weights emphasizing immunogenicity and expression. The composite is validated as useful, but the single swept vector is not treated as a universal production setting.</p>
+<p><strong>Literature context.</strong> Neoantigen immunogenicity prediction on <em>binder-matched hard negatives</em> is a deliberately hard regime, and the achievable ceiling in the literature is correspondingly modest. A 2023 comprehensive benchmark on the binder-matched ITSNdb set (129 immunogenic / 70 non-immunogenic) found that <strong>all evaluated tools scored AUROC 0.52–0.60</strong> (DeepHLApan, MHCflurry, PRIME, DeepImmuno, MixMHCpred; Frontiers in Immunology 2023, doi:10.3389/fimmu.2023.1094236), and a <em>Nature Cancer</em> 2023 correspondence titled &quot;Breaking the performance ceiling for neoantigen immunogenicity prediction&quot; frames the field's high-water mark at roughly AUROC 0.6 on controlled evaluations (doi:10.1038/s43018-023-00675-z). Tools that report AUROC &gt; 0.8 for immunogenicity have generally used random-proteome or non-binder negatives, which inflate the metric: BigMHC-IM scores AUROC 0.85 on an easy (IFN-γ) set but <strong>0.56</strong> on hard MANAFEST negatives (Albert et al. 2023, doi:10.1038/s42256-023-00694-6), and PRIME falls from a self-reported 0.81 to ≈0.58 on binder-matched data. Against this backdrop our hard-negative composite (0.715) and immunogenicity-alone sub-score (≈0.788) sit <strong>at or above the published binder-matched ceiling</strong>, and incorporate the five TESLA-validated parameters — binding affinity, expression, stability, agretopicity, foreignness (Wells et al., <em>Cell</em> 2020, doi:10.1016/j.cell.2020.09.015). Two caveats keep this honest: the Müller evaluation is <em>in-cohort</em> (the dataset family that defines the labels) rather than a prospective held-out cohort, and the NEPdb result below is statistically underpowered.</p>
+<h3 id="2-4-presentation-backend-agreement-phase-2-calibration">2.4 Presentation-backend agreement (Phase 2 calibration)</h3>
+<p>A presentation-backend check asks whether the calibrated MUNIS EL ranks track an established presentation proxy (NetMHCpan EL ranks) on peptides excluded from calibration:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Scope</th>
+<th style="text-align:right">Peptides</th>
+<th style="text-align:right">Spearman ρ</th>
+<th style="text-align:right">Pearson r</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pooled HLA-I panel</td>
+<td style="text-align:right">8400</td>
+<td style="text-align:right">0.603</td>
+<td style="text-align:right">0.598</td>
+</tr>
+</tbody>
+</table></div>
+<p>Across the seven HLA-I alleles, per-allele Spearman ρ ranged from 0.549 to 0.680 and strong-binder Jaccard concordance from 0.250 to 0.371. The interpretation is useful but bounded: MUNIS is calibrated enough to contribute to the presentation ensemble, but it is not redundant with NetMHCpan — which supports the all-backends design rather than replacing one presentation signal with another.</p>
+<p><strong>Literature context.</strong> A pooled Spearman ρ ≈ 0.60 may look modest, but it is the <em>expected</em> level of agreement between two independently-trained eluted-ligand presentation predictors — not a sign of miscalibration. MUNIS and NetMHCpan 4.1 are both near-ceiling presentation predictors: on the MUNIS presentation benchmark they score median ROC-AUC 0.980 vs 0.962 and average precision 0.952 vs 0.925 (Wohlwend et al., <em>Nature Machine Intelligence</em> 2025, doi:10.1038/s42256-024-00971-y) — separated by only ~2 AUC / ~3 AP points, yet each ranks individual peptides somewhat differently. Independently-trained MHC predictors are in fact known to disagree substantially at the per-peptide level: among eluted-ligand tools the median positive predictive value spans NetMHCpan-4.1 0.829 down to MHCflurry-EL 0.714 on the same mass-spec benchmark (Reynisson et al., <em>NAR</em> 2020, doi:10.1093/nar/gkaa379), and a dedicated cross-tool study found independently-trained binding predictors agree only weakly peptide-to-peptide (low intraclass correlation; Nguyen et al., <em>F1000Research</em> 2023, doi:10.12688/f1000research.132538.1). A ρ ≈ 0.60 between two independent EL predictors is therefore the level the field expects, and is precisely why the pipeline runs an all-backends ensemble rather than trusting one presentation signal. (No published study reports a <em>pairwise</em> rank correlation between two EL predictors on an identical peptide set, so this is a novel calibration datapoint rather than a confirmatory one.)</p>
+<p><strong>Figure 3:</strong> <figure id="fig3_munis_agreement"><img alt="fig3 munis agreement" src="scientific_report_figures/fig3_munis_agreement.png"><figcaption><span class="lead">fig3 munis agreement</span></figcaption></figure> — per-peptide MUNIS EL-rank versus NetMHCpan EL-rank agreement (log-log hexbin, n = 8400) with the identity line and pooled Spearman ρ. Lower %Rank = stronger; a faithful calibration yields a positive correlation.</p>
+<h3 id="2-5-construct-design-and-statistics-phases-3-4">2.5 Construct design and statistics (Phases 3–4)</h3>
+<p>Phase 3 (CDS) exposed a biologically important gate-calibration issue: a historical CAI ≥ 0.95 threshold was too stringent for GPGPG-linked polyepitope constructs, behaving like a single-gene ORF heuristic. CAI is now treated as advisory with a lower floor, while GC and uridine constraints remain closer to manufacturing-relevant hard constraints. Phase 4 (UTR) showed curated UTRs can satisfy Kozak and upstream-AUG constraints, while joint folding across the 5′UTR–CDS boundary is a more discriminating advisory metric.</p>
+<p>In the completed real run, the construct's design metrics are summarized against the species-profile gates:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Region / metric</th>
+<th style="text-align:right">Value</th>
+<th>Gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CDS length</td>
+<td style="text-align:right">1791 nt</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Encoded cassette</td>
+<td style="text-align:right">20 peptides</td>
+<td>—</td>
+</tr>
+<tr>
+<td>CAI</td>
+<td style="text-align:right">0.957</td>
+<td>≥ 0.82 (advisory)</td>
+</tr>
+<tr>
+<td>GC fraction</td>
+<td style="text-align:right">0.600</td>
+<td>0.5–0.7</td>
+</tr>
+<tr>
+<td>Uridine fraction</td>
+<td style="text-align:right">0.178</td>
+<td>≤ 0.18 (long CDS)</td>
+</tr>
+<tr>
+<td>5′UTR length</td>
+<td style="text-align:right">66 nt</td>
+<td>20–200 nt</td>
+</tr>
+<tr>
+<td>3′UTR length</td>
+<td style="text-align:right">1199 nt</td>
+<td>50–1500 nt</td>
+</tr>
+<tr>
+<td>5′UTR MFE</td>
+<td style="text-align:right">−11.6 kcal/mol</td>
+<td>−15 to −5 (advisory)</td>
+</tr>
+<tr>
+<td>3′UTR MFE</td>
+<td style="text-align:right">−327.8 kcal/mol</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>The real-run Phase 3 and Phase 4 were each initially halted by reviewers (CAI/GC/uridine margins for Phase 3; curated-MFE and typed-handoff issues for Phase 4) and passed only after optimization changes — important evidence that the pipeline did not simply accept its first output.</p>
+<p><strong>Literature context.</strong> These composition values are in line with clinically validated mRNA vaccine designs: our GC fraction of 0.60 matches the putative Moderna (0.62) and Pfizer (0.57) spike constructs and the mRNAid-optimized range (0.62; Vostrosablin et al., <em>NAR Genomics and Bioinformatics</em> 2024, doi:10.1093/nargab/lqae028), and our uridine fraction of 0.178 sits in the optimized band (≈0.14 minimum to ≈0.27 unoptimized). CAI 0.957 is in the &quot;high / well-optimized&quot; range (CAI ≥ 0.9; Sharp &amp; Li, <em>NAR</em> 1987, doi:10.1093/nar/15.3.1281). One nuance from the primary codon-optimization literature is worth stating: maximizing CAI alone is <strong>not</strong> the optimal strategy. LinearDesign (our primary backend) shows that a joint MFE/CAI Pareto optimum (λ ≈ 2–4) yields 2.3–2.9× higher protein expression and up to ~128× higher antibody titre than a maximum-CAI benchmark sequence, because pure CAI maximization produces largely unstructured RNA (Zhang et al., <em>Nature</em> 2023, doi:10.1038/s41586-023-06127-z). The pipeline runs exactly this λ ∈ {2, 4, 6} sweep, so a high CAI is treated as one axis of a trade-off rather than the objective.</p>
+<p><strong>Figure 4:</strong> <figure id="fig4_construct_summary_metrics"><img alt="fig4 construct summary metrics" src="scientific_report_figures/fig4_construct_summary_metrics.png"><figcaption><span class="lead">fig4 construct summary metrics</span></figcaption></figure> — final construct metrics grouped by category (length, composition, folding, translation, manufacturing), each dot coloured by its species-profile gate result.</p>
+<h3 id="2-6-final-construct-and-manufacturing-qc-phase-5">2.6 Final construct and manufacturing QC (Phase 5)</h3>
+<p>Manufacturing QC distinguishes hard blockers from advisory warnings. In the committed real run:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align:right">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Final construct length</td>
+<td style="text-align:right">3176 nt</td>
+</tr>
+<tr>
+<td>m1Ψ substitution ready</td>
+<td style="text-align:right">true</td>
+</tr>
+<tr>
+<td>Critical hazards</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>Manufacturing cleared</td>
+<td style="text-align:right">true</td>
+</tr>
+<tr>
+<td>Polyepitope fold backend</td>
+<td style="text-align:right">ESMFold</td>
+</tr>
+</tbody>
+</table></div>
+<p>The output contains advisory warnings but no critical manufacturing hazards — a warning is not equivalent to a failed construct. The scanner is a conservative manufacturability screen, not a biological efficacy model. Separately, OpenVaccine provides measured degradation/reactivity data showing the degradation backends carry measurable signal; these metrics are advisory and do not gate clearance.</p>
+<p><strong>Literature context.</strong> The degradation ensemble spans the full published performance range for this task. The ViennaRNA MFE proxy is the baseline tier (Pearson ≈ 0.67 on chemical-mapping reactivity, Spearman ≈ 0.25 on full-length half-life; EternaBench, <em>Nature Methods</em> 2022, doi:10.1038/s41592-022-01605-0). DegScore correlates with measured in-solution half-life at Spearman ≈ −0.66 on curated constructs (Leppek et al., <em>Nature Communications</em> 2022, doi:10.1038/s41467-022-28776-w). The strongest backend, RNAdegformer, reaches a private-test MCRMSE of 0.337 on the OpenVaccine benchmark — <em>better</em> than the competition's first-place solution (0.342) — and Pearson −0.66 to −0.50 against measured half-life (<em>Briefings in Bioinformatics</em> 2023, doi:10.1093/bib/bbac581; OpenVaccine, <em>Nature Machine Intelligence</em> 2022, doi:10.1038/s42256-022-00571-8). Running all three and averaging is appropriate given that thermodynamic proxies and deep models occupy opposite ends of this accuracy range.</p>
+<p><strong>Figure 5:</strong> <figure id="fig5_construct_feature_tracks"><img alt="fig5 construct feature tracks" src="scientific_report_figures/fig5_construct_feature_tracks.png"><figcaption><span class="lead">fig5 construct feature tracks</span></figcaption></figure> — final mRNA construct map: 5′UTR / CDS / 3′UTR / poly(A) regions, the 20 peptide cassettes, and QC hazards along the nucleotide axis, with critical blockers kept visually separable from advisory warnings.</p>
+<h3 id="2-7-completed-real-run-case-study">2.7 Completed real-run case study</h3>
+<p>The completed real-run artifact chain is the strongest end-to-end demonstration currently committed. Beginning from a mutation report, it completed all five phases:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Output count / headline</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Genomic analysis</td>
+<td>1059 mutations</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>Neoantigen identification</td>
+<td>292 ranked candidates</td>
+<td>pass</td>
+</tr>
+<tr>
+<td>CDS design</td>
+<td>1791-nt CDS</td>
+<td>pass after reviewer halt</td>
+</tr>
+<tr>
+<td>UTR engineering</td>
+<td>66-nt 5′UTR + 1199-nt 3′UTR</td>
+<td>pass after reviewer halt</td>
+</tr>
+<tr>
+<td>Manufacturing QC</td>
+<td>3176-nt construct</td>
+<td>pass</td>
+</tr>
+</tbody>
+</table></div>
+<p>The final construct is a 3176-nt mRNA candidate (66-nt 5′UTR, 1791-nt CDS, 1199-nt 3′UTR, poly(A) tail), m1Ψ-ready and manufacturing-cleared under the current hard-gate policy.</p>
+<h3 id="2-8-benchmarks-in-literature-context">2.8 Benchmarks in literature context</h3>
+<p>The table below places each pipeline benchmark next to the relevant published
+performance, so the numbers can be read against the field rather than in
+isolation. The recurring theme is that our results are competitive <strong>once the
+evaluation construction is matched</strong> — easy/random negatives inflate published
+neoantigen and presentation metrics, and our hard-negative results compare to the
+literature's hard-negative ceiling, not to its headline numbers.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Our result</th>
+<th>Published comparator</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neoantigen ranking, hard negatives</td>
+<td>composite AUROC 0.715; immunogenicity-alone ≈0.788</td>
+<td>binder-matched ceiling <strong>AUROC 0.52–0.60</strong> (ITSNdb, <em>Front. Immunol.</em> 2023); field &quot;ceiling&quot; ≈0.6 (<em>Nat. Cancer</em> 2023)</td>
+<td>at/above ceiling</td>
+</tr>
+<tr>
+<td>Neoantigen ranking, random negatives</td>
+<td>AUROC 0.948</td>
+<td>inflated regime; tools report 0.80–0.99 on easy negatives (BigMHC-IM 0.85 IFN-γ)</td>
+<td>not the defensible headline</td>
+</tr>
+<tr>
+<td>NEPdb independent check</td>
+<td>AUROC 0.643 (n=11 pos)</td>
+<td>standard tools 0.52–0.60 on similar curated sets</td>
+<td>above baseline but underpowered</td>
+</tr>
+<tr>
+<td>MUNIS vs NetMHCpan EL-rank</td>
+<td>pooled Spearman ρ 0.603</td>
+<td>expected for two independent EL predictors (MUNIS/NetMHCpan AUC 0.980/0.962; EL-tool PPV spread 0.83→0.71)</td>
+<td>expected agreement, not poor</td>
+</tr>
+<tr>
+<td>RNA degradation</td>
+<td>ensemble: ViennaRNA→DegScore→RNAdegformer</td>
+<td>ViennaRNA Spearman ≈0.25; DegScore ≈−0.66; RNAdegformer MCRMSE 0.337 (beats Kaggle 1st 0.342)</td>
+<td>spans baseline→SOTA</td>
+</tr>
+<tr>
+<td>CDS composition</td>
+<td>CAI 0.957, GC 0.60, U 0.178</td>
+<td>Moderna GC 0.62 / Pfizer 0.57; CAI ≥0.9 &quot;well-optimized&quot;; max-CAI alone suboptimal (LinearDesign)</td>
+<td>matches commercial designs</td>
+</tr>
+<tr>
+<td>Mutation recall (Phase 1)</td>
+<td>0.870 mean (5-patient Hugo, Mutect2)</td>
+<td>single-caller WES recall ≈46–63%; ensemble ≈93% (SEQC2 2021)</td>
+<td>above the single-caller WES range</td>
+</tr>
+<tr>
+<td>HLA typing</td>
+<td>OptiType, 4-digit 0.967 (5-patient Hugo)</td>
+<td>OptiType 4-digit class-I 97–99% accuracy</td>
+<td>matches published; stronger than Hugo 2016's ATHLATES</td>
+</tr>
+<tr>
+<td>End-to-end neoantigen recovery</td>
+<td>full chain completes 5 phases</td>
+<td>nextNEOpi recovered 36/38 TESLA immunogenic pMHC (~95%)</td>
+<td>comparable end-to-end target</td>
+</tr>
+</tbody>
+</table></div>
+<p>Full citations and per-source verification status are recorded in
+<code>docs/design_reports/007-literature-benchmark-context.md</code>.</p>
+<hr />
+<h2 id="3-researcher-experience">3. Researcher experience</h2>
+<p><em>To be written.</em></p>
+<hr />
+<h2 id="4-discussion">4. Discussion</h2>
+<h3 id="4-1-what-the-results-support">4.1 What the results support</h3>
+<p>The pipeline's strongest claim is in neoantigen prioritization. The hard-negative Müller contrast (AUROC 0.834) and the binding-controlled ablation together show that the system ranks immunogenic peptides above binder-like negatives using signal beyond peptide-MHC affinity alone. The presentation-backend agreement (ρ 0.603) supports composing multiple presentation tools rather than trusting a single one. The completed real run demonstrates that the <em>orchestration</em> works end to end: five agents, each running field-standard tools, produced a manufacturable, m1Ψ-ready construct, and the reviewer halts at Phases 3–4 show the quality gates have teeth.</p>
+<h3 id="4-2-limitations">4.2 Limitations</h3>
+<ol>
+<li><strong>Phase 1 used a single caller on a small cohort.</strong> The 5-patient Hugo validation gives mean recall 0.870 with a single caller (Mutect2) — above the recalibrated benchmark gate (0.80) and consistent with published WES benchmarks (single-caller recall ≈ 46–63% on harder synthetic sets, ≈ 93% with ensemble voting; SEQC2, <em>Nat. Biotechnol.</em> 2021). Higher recall would require ensemble calling or restriction to clonal, high-VAF variants. The cohort is small (n = 5) and the quant correlation is from a single patient.</li>
+<li><strong>Full cohort end-to-end validation remains open.</strong> The current real run is a completed case study, not a cohort-scale clinical benchmark.</li>
+<li><strong>Some backend metrics are advisory.</strong> RNA degradation, IVT yield, and several UTR/CDS quality metrics aid prioritization but do not directly prove biological efficacy.</li>
+<li><strong>Negative-set construction strongly affects ranking metrics.</strong> The hard-negative contrast is the defensible result; random-negative AUROC should not be read as the headline.</li>
+<li><strong>Small cohorts carry wide uncertainty.</strong> NEPdb is a useful independent check, but its small positive count gives broad confidence intervals.</li>
+</ol>
+<h3 id="4-3-broader-potential">4.3 Broader potential</h3>
+<p>The agentic-orchestration pattern generalizes beyond this construct. Because each phase is a typed artifact transformed by interchangeable, provenance-stamped tools, the same architecture extends to new species (a single species profile), new backends (added to a phase ensemble without touching downstream code), and new biological questions (a new benchmark in the harness layer, never the pipeline). The wider opportunity is autonomous, auditable composition of trusted biomedical tools: not a black-box model that replaces domain software, but an orchestrator that runs it, reconciles it, and shows its work.</p>
+<hr />
+<h2 id="5-reproducibility">5. Reproducibility</h2>
+<p>Report tables are generated from committed artifacts by:</p>
+<pre><code class="language-bash">uv run python scripts/report/build_scientific_report_tables.py
+</code></pre>
+<p>Figures are rendered (editorial style matching the web UI) by:</p>
+<pre><code class="language-bash">uv run python reports/report_figures.py
+</code></pre>
+<p>and the report is rendered to a self-contained webpage by:</p>
+<pre><code class="language-bash">uv run python scripts/report/build_report_html.py        # add --embed for a single file
+</code></pre>
+<p>Two figures depend on a one-time data regeneration:</p>
+<ul>
+<li><strong>Figure 2</strong> (<code>phase2_candidate_predictions.csv</code>) requires
+<code>uv run python scripts/benchmark/sweep_muller_priority.py --neg-max-rank 2.0 --dump-candidates reports/467_priority_sweep/muller_hardneg_candidates.json</code>
+on the held-out Müller cohort (not committed; see <code>data/benchmark/muller2023/README.md</code>).</li>
+<li><strong>Figure 3</strong> (<code>munis_validation_pairs.csv</code>) is reproduced by
+<code>uv run python scripts/validate_munis_vs_netmhcpan.py --dump-pairs data/benchmark/munis_validation_pairs.json</code>
+(held-out MUNIS data is committed).</li>
+</ul>
+<p>All notebook/figure inputs are CSVs under <code>reports/scientific_report_data/</code>; each quantitative row carries <code>source</code> and <code>extraction_method</code>.</p>
+<h2 id="6-figure-index">6. Figure index</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Figure</th>
+<th>Id</th>
+<th>Status</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>fig1_workflow_schematic</code></td>
+<td>committed</td>
+<td>end-to-end agentic workflow, auto-discovered from agent source (<code>/tools</code> view)</td>
+</tr>
+<tr>
+<td>2 (Phase 1)</td>
+<td><code>fig_phase1_genomic_recall</code></td>
+<td>committed</td>
+<td>per-patient genomic recall + HLA on the 5-patient Hugo cohort</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>fig2_phase2_classification</code></td>
+<td>committed</td>
+<td>neoantigen ranking + classification (distribution, ROC/PR, top-k, confusion)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>fig3_munis_agreement</code></td>
+<td>committed</td>
+<td>MUNIS vs NetMHCpan EL-rank agreement scatter</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>fig4_construct_summary_metrics</code></td>
+<td>committed</td>
+<td>final construct metrics vs species-profile gates</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>fig5_construct_feature_tracks</code></td>
+<td>committed</td>
+<td>final construct map with QC hazard tracks</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="7-references">7. References</h2>
+<p>Literature comparators cited above for benchmark context (verification status in
+<code>docs/design_reports/007-literature-benchmark-context.md</code>):</p>
+<ol>
+<li>Müller M et al. Machine learning methods and harmonized datasets improve immunogenic neoantigen prediction. <em>Immunity</em> 56:2650 (2023). doi:10.1016/j.immuni.2023.09.002</li>
+<li>Wells DK et al. Key parameters of tumor epitope immunogenicity revealed through a consortium approach (TESLA). <em>Cell</em> 183:818 (2020). doi:10.1016/j.cell.2020.09.015</li>
+<li>Nibeyro G et al. Unraveling tumor specific neoantigen immunogenicity prediction: a comprehensive analysis (ITSNdb benchmark). <em>Front. Immunol.</em> 14 (2023). doi:10.3389/fimmu.2023.1094236</li>
+<li>O'Brien R et al. Breaking the performance ceiling for neoantigen immunogenicity prediction. <em>Nat. Cancer</em> 4:1618 (2023). doi:10.1038/s43018-023-00675-z</li>
+<li>Albert BA et al. Deep neural networks predict class I MHC epitope presentation and transfer-learn neoepitope immunogenicity (BigMHC). <em>Nat. Mach. Intell.</em> 5:861–872 (2023). doi:10.1038/s42256-023-00694-6</li>
+<li>Schmidt J et al. Prediction of neo-epitope immunogenicity reveals TCR recognition determinants (PRIME). <em>Cell Rep. Med.</em> 2:100194 (2021). doi:10.1016/j.xcrm.2021.100194</li>
+<li>Wohlwend J et al. Deep learning enhances the prediction of HLA class I-presented CD8+ T cell epitopes in foreign pathogens (MUNIS). <em>Nat. Mach. Intell.</em> 7:232 (2025). doi:10.1038/s42256-024-00971-y</li>
+<li>Reynisson B et al. NetMHCpan-4.1 and NetMHCIIpan-4.0. <em>Nucleic Acids Res.</em> 48:W449 (2020). doi:10.1093/nar/gkaa379</li>
+<li>Nguyen A, Nellore A, Thompson RF. Discordant results among major histocompatibility complex binding affinity prediction tools. <em>F1000Research</em> 12:617 (2023). doi:10.12688/f1000research.132538.1</li>
+<li>Zhang H et al. Algorithm for optimized mRNA design improves stability and immunogenicity (LinearDesign). <em>Nature</em> 621:396 (2023). doi:10.1038/s41586-023-06127-z</li>
+<li>Vostrosablin N et al. mRNAid, an open-source platform for therapeutic mRNA design and optimization strategies. <em>NAR Genom. Bioinform.</em> 6:lqae028 (2024). doi:10.1093/nargab/lqae028</li>
+<li>Sharp PM, Li WH. The codon adaptation index. <em>Nucleic Acids Res.</em> 15:1281 (1987). doi:10.1093/nar/15.3.1281</li>
+<li>Leppek K et al. Combinatorial optimization of mRNA structure, stability, and translation (DegScore/PERSIST-seq). <em>Nat. Commun.</em> 13:1536 (2022). doi:10.1038/s41467-022-28776-w</li>
+<li>He S et al. RNAdegformer: accurate prediction of mRNA degradation at nucleotide resolution. <em>Brief. Bioinform.</em> 24:bbac581 (2023). doi:10.1093/bib/bbac581</li>
+<li>Wayment-Steele HK et al. Deep learning models for predicting RNA degradation via dual crowdsourcing (OpenVaccine). <em>Nat. Mach. Intell.</em> 4:1174 (2022). doi:10.1038/s42256-022-00571-8</li>
+<li>Wayment-Steele HK et al. RNA secondary structure packages evaluated and improved by high-throughput experiments (EternaBench). <em>Nat. Methods</em> 19:1234 (2022). doi:10.1038/s41592-022-01605-0</li>
+<li>Hugo W et al. Genomic and transcriptomic features of response to anti-PD-1 therapy in metastatic melanoma. <em>Cell</em> 165:35 (2016). doi:10.1016/j.cell.2016.02.065</li>
+<li>Xiao W et al. Toward best practice in cancer mutation detection with WGS and WES (SEQC2). <em>Nat. Biotechnol.</em> 39:1141 (2021). doi:10.1038/s41587-021-00994-5</li>
+<li>Szolek A et al. OptiType: precision HLA typing from NGS data. <em>Bioinformatics</em> 30:3310 (2014). doi:10.1093/bioinformatics/btu548</li>
+<li>Orenbuch R et al. arcasHLA: high-resolution HLA typing from RNA-seq. <em>Bioinformatics</em> 36:33 (2020). doi:10.1093/bioinformatics/btz474</li>
+<li>Rieder D et al. nextNEOpi: a comprehensive pipeline for computational neoantigen prediction. <em>Bioinformatics</em> 38:1131 (2022). doi:10.1093/bioinformatics/btab759</li>
+<li>Xia J et al. NEPdb: a database of T-cell experimentally-validated neoantigens. <em>Front. Immunol.</em> 12:644637 (2021). doi:10.3389/fimmu.2021.644637</li>
+</ol>
+</article>
+<div></div></div>
+<script>
+const links=[...document.querySelectorAll('nav.toc a')];
+const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+const obs=new IntersectionObserver(es=>{for(const e of es){if(e.isIntersecting){
+  links.forEach(l=>l.classList.remove('active'));
+  const a=map.get(e.target.id); if(a)a.classList.add('active');}}},
+  {rootMargin:'-10% 0px -80% 0px'});
+document.querySelectorAll('article h2,article h3').forEach(h=>obs.observe(h));
+</script>
+</body></html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From a single mutation to an mRNA vaccine — the pipeline, illustrated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="story.css">
+</head>
+<body>
+<style>
+.site-overlay-nav{position:fixed;top:0;right:0;z-index:9999;display:flex;
+  gap:.25rem;align-items:center;padding:.5rem .75rem;font-family:"Inter",
+  system-ui,sans-serif;font-size:.78rem;font-weight:500;
+  background:rgba(253,252,250,.72);backdrop-filter:blur(8px);
+  border-bottom-left-radius:10px;border:1px solid rgba(230,227,221,.6);
+  border-top:0;border-right:0}
+.site-overlay-nav a{color:#6B6B66;text-decoration:none;padding:.2rem .5rem;
+  border-radius:6px;transition:color .15s,background .15s}
+.site-overlay-nav a:hover{color:#111}
+.site-overlay-nav a.active{color:#FF2E88}
+@media print{.site-overlay-nav{display:none}}
+</style>
+<nav class="site-overlay-nav" aria-label="Site">
+  <a href="./" class="active">Story</a>
+  <a href="article.html">Article</a>
+</nav>
+
+<div class="sky"></div>
+
+<!-- persistent context: what you're looking at -->
+<div class="context">
+  <span class="sys">Autonomous mRNA vaccine pipeline</span>
+  <span class="phase" id="ctx-phase">Phase 1 / 5 · Genomic analysis</span>
+  <span class="spacer"></span>
+  <span class="cohort" id="ctx-cohort">Benchmark: Hugo 2016 WES, n = 5</span>
+</div>
+
+<!-- progress rail (acts) -->
+<nav class="rail" aria-hidden="true">
+  <span class="dot on" data-act="1"></span>
+  <span class="dot" data-act="2"></span>
+  <span class="dot" data-act="3"></span>
+  <span class="dot" data-act="4"></span>
+  <span class="dot" data-act="5"></span>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div>
+    <div class="kicker">An autonomous mRNA vaccine pipeline</div>
+    <h1>It begins with a single <em>mutation</em>.</h1>
+    <p class="lede">Follow one tumour variant through five phases of design — from
+      the genome to a manufacturable mRNA construct — with the pipeline's
+      benchmarked accuracy shown at each step.</p>
+    <div class="scrollcue">Scroll to follow ↓</div>
+  </div>
+</header>
+
+<!-- ACT 1 -->
+<section class="act act--1" id="act-1">
+  <div class="stage">
+    <!-- real B-DNA structure (3Dmol.js) — the somatic variant base pair is red -->
+    <div id="dna-viewer"></div>
+    <div class="mol-caption" id="dna-cap">B-DNA · 1BNA · the somatic variant base pair in red</div>
+    <!-- tools stream into this column as their step scrolls past -->
+    <div class="flow" id="flow1" data-lenis-prevent></div>
+
+    <div class="scanlabel" id="scanlabel">▸ <b>in-silico variant caller</b><br>comparing tumour reads against the healthy reference</div>
+
+    <div class="captions" id="captions">
+      <div class="caption" data-at="0.04">
+        <div class="step">1.1 · Sequencing</div>
+        <h2>The tumour's genome is read alongside a healthy sample from the same patient.</h2>
+      </div>
+      <div class="caption" data-at="0.42">
+        <div class="step">1.2 · Somatic calling</div>
+        <h2>Where the tumour differs from healthy tissue — <b>a somatic mutation</b>, the cancer's private damage.</h2>
+      </div>
+      <div class="caption" data-at="0.82">
+        <div class="step">1.3 · Expression</div>
+        <h2>A mutation only matters if it is expressed: how strongly is the mutated gene transcribed?</h2>
+        <p>Select a marker to see the tool and its benchmarked accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 2 -->
+<section class="act act--2" id="act-2">
+  <div class="stage">
+    <svg id="stage2-svg" viewBox="0 0 1000 1000" aria-label="Antigen presentation on the MHC">
+      <g id="scene2"></g>
+    </svg>
+    <!-- real structures (3Dmol.js) -->
+    <div id="protein-viewer"></div>
+    <div class="mol-caption" id="protein-cap">a tumour protein (illustrative) · the mutation persists in red</div>
+    <div id="mhc-viewer"></div>
+    <div class="mol-caption" id="mhc-cap">peptide · MHC · T-cell receptor — 4MNQ complex · real structure</div>
+    <div class="flow" id="flow2" data-lenis-prevent></div>
+    <div class="captions" id="captions2">
+      <div class="caption" data-at="0.05">
+        <div class="step">2.1 · Translation</div>
+        <h2>The mutated gene is transcribed and translated into protein — <b>the mutation rides along</b>.</h2>
+      </div>
+      <div class="caption" data-at="0.30">
+        <div class="step">2.2 · Processing</div>
+        <h2>The cell shreds a sample of its own proteins into short peptides, 8–11 amino acids long.</h2>
+      </div>
+      <div class="caption" data-at="0.56">
+        <div class="step">2.3 · Presentation</div>
+        <h2>One fragment is clamped in the groove of an <b>MHC</b> molecule and carried to the surface — the display case.</h2>
+      </div>
+      <div class="caption" data-at="0.84">
+        <div class="step">2.4 · Recognition</div>
+        <h2>A T cell patrols. If the peptide looks foreign — because it carries the mutation — the cell is flagged.</h2>
+        <p>Select a marker for the tool and its benchmarked accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 3 — candidate ranking -->
+<section class="act act--3" id="act-3">
+  <div class="stage">
+    <svg id="stage3-svg" viewBox="0 0 1000 1000" aria-label="Candidate ranking"><g id="scene3"></g></svg>
+    <div class="flow" id="flow3" data-lenis-prevent></div>
+    <div class="captions" id="captions3">
+      <div class="caption" data-at="0.10">
+        <div class="step">3.1 · Ranking</div>
+        <h2>Dozens of mutations were found. One composite score ranks them — <b>binding, expression, clonality, foreignness</b> — so the pipeline spends its payload on the few most likely to provoke a response.</h2>
+      </div>
+      <div class="caption" data-at="0.62">
+        <div class="step">3.2 · Selection</div>
+        <h2>The top candidates become the vaccine's cargo. Our mutation — a strong, clonal, expressed binder — rises to the top.</h2>
+        <p>Select a marker for the tool and its benchmarked accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 4 — mRNA construct design -->
+<section class="act act--4" id="act-4">
+  <div class="stage">
+    <svg id="stage4-svg" viewBox="0 0 1000 1000" aria-label="mRNA construct design"><g id="scene4"></g></svg>
+    <div class="flow" id="flow4" data-lenis-prevent></div>
+    <div class="captions" id="captions4">
+      <div class="caption" data-at="0.08">
+        <div class="step">4.1 · Reverse translation</div>
+        <h2>Each chosen peptide is written back into RNA. Every amino acid has several synonymous codons; the optimiser picks the ones the ribosome reads <b>fastest and most stably</b>.</h2>
+      </div>
+      <div class="caption" data-at="0.40">
+        <div class="step">4.2 · Assembly</div>
+        <h2>The epitopes are strung into one reading frame, flanked by untranslated regions that tune how often the message is read, then finished with a 5′ cap and a poly-A tail.</h2>
+      </div>
+      <div class="caption" data-at="0.74">
+        <div class="step">4.3 · Folding</div>
+        <h2>The finished message is folded in silico — a stable, well-formed structure survives longer in the cell and is translated more reliably.</h2>
+        <p>Select a marker for the tool and its benchmarked accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACT 5 — manufacturing QC -->
+<section class="act act--5" id="act-5">
+  <div class="stage">
+    <svg id="stage5-svg" viewBox="0 0 1000 1000" aria-label="Manufacturing quality control"><g id="scene5"></g></svg>
+    <div class="flow" id="flow5" data-lenis-prevent></div>
+    <div class="captions" id="captions5">
+      <div class="caption" data-at="0.10">
+        <div class="step">5.1 · Hazard scan</div>
+        <h2>Before manufacture the sequence is swept for trouble: restriction sites that would cut it, degradation-prone stretches, toxic translation products.</h2>
+      </div>
+      <div class="caption" data-at="0.48">
+        <div class="step">5.2 · Modification</div>
+        <h2>Uridine is swapped for <b>N1-methylpseudouridine</b> — the chemical tweak that lets an mRNA vaccine slip past the innate immune system.</h2>
+      </div>
+      <div class="caption" data-at="0.82">
+        <div class="step">5.3 · Clearance</div>
+        <h2>Every gate passes. The construct is manufacturable — a synthesisable sequence, designed end-to-end from a single mutation.</h2>
+        <p>Select a marker for the tool and its benchmarked accuracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- the actual to-manufacture payload (real canine-OSA run) -->
+<section class="payload" id="payload">
+  <div class="payload-inner">
+    <div class="step">The product</div>
+    <h2>The manufacturable payload</h2>
+    <p class="payload-lede">The real construct this pipeline designed end-to-end —
+      coloured by epitope and <span class="lnk-word">GPGPG</span> linker.</p>
+    <div id="payload-ribbon" class="payload-ribbon"></div>
+    <div id="payload-legend" class="payload-legend"></div>
+    <p class="payload-seqcap">Polyepitope payload — translated amino-acid sequence</p>
+    <div id="payload-seq" class="payload-seq"></div>
+    <div id="payload-facts" class="payload-facts"></div>
+  </div>
+</section>
+
+<!-- coda -->
+<footer class="coda" id="coda">
+  <h2>From one mutation to a manufacturable vaccine.</h2>
+  <p>Five phases, fully autonomous, drawing on <span class="count" id="cov-tools">…</span>
+     specialised tools — every measurement above traceable to its literature and
+     its source. No human in the loop.</p>
+  <div class="more">end of pipeline</div>
+</footer>
+
+<script src="story_data.js"></script>
+<script src="payload.js"></script>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="vendor/lenis.min.js"></script>
+<script src="vendor/3Dmol-min.js"></script>
+<script src="structures.js"></script>
+<script src="story_flow.js"></script>
+<script src="mol.js"></script>
+<script src="story.js"></script>
+<script src="story_act2.js"></script>
+<script src="story_construct.js"></script>
+<script src="story_payload.js"></script>
+<script src="story_bridge.js"></script>
+</body>
+</html>

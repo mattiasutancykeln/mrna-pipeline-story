@@ -1,0 +1,337 @@
+{
+  "generated_from": "scorecard.json + src/ui/tool_registry (build_story.py)",
+  "acts": [
+    {
+      "id": 1,
+      "tag": "Phase 1 \u00b7 Genomic analysis",
+      "title": "Somatic variant recovery",
+      "subtitle": "Alignment, somatic calling, and genomic characterisation of the tumour exome.",
+      "hotspots": [
+        {
+          "tool": "modal_star",
+          "label": "STAR Alignment (Modal)",
+          "blurb": "Lines up the tumour's DNA reads against the human reference genome.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "vcf_parser",
+          "label": "VCF Parser (cyvcf2)",
+          "blurb": "Collects the DNA changes that appear in the tumour but not in healthy tissue.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis",
+          "metric": {
+            "name": "Somatic mutation recall",
+            "value": "0.870",
+            "gate": ">= 0.8",
+            "lit": "single-caller WES recall \u22480.46\u20130.63 (SEQC2 2021); ensemble \u22480.93",
+            "evidence": "5-patient Hugo 2016 (BWA + Mutect2 vs cBioPortal truth)",
+            "source": "reports/benchmarks/hugo2016_phase1_cohort_results.csv"
+          }
+        },
+        {
+          "tool": "variant_annotator",
+          "label": "Variant Annotator (Ensembl VEP)",
+          "blurb": "Works out what each DNA change does to its gene and protein.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "rna_quant",
+          "label": "RNA-seq Quantification",
+          "blurb": "Measures how strongly each gene is switched on in the tumour.",
+          "section": "genomic",
+          "tag": "Phase 1 \u00b7 Genomic analysis",
+          "metric": {
+            "name": "RNA-quant correlation",
+            "value": "0.891",
+            "gate": ">= 0.85",
+            "lit": "gene-level RNA-seq quant is a standard expression-weighting input",
+            "evidence": "kallisto gene-TPM vs GSE78220 reference",
+            "source": "docs/benchmarks/hugo2016_phase1.md"
+          }
+        },
+        {
+          "tool": "allele_specific_expression",
+          "label": "Allele-Specific Expression (ASE)",
+          "blurb": "Checks whether the mutated copy of the gene is actually expressed.",
+          "section": "genomic",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "clonality",
+          "label": "Clonality Estimator",
+          "blurb": "Estimates how much of the tumour carries each mutation.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "ensembl_protein",
+          "label": "Ensembl Protein Context Client",
+          "blurb": "Looks up the protein sequence surrounding each mutation.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "simulation",
+          "label": "Simulation Modes (clean/noisy/hard)",
+          "blurb": "Generates controlled test data to check the pipeline behaves correctly.",
+          "section": "mining",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        },
+        {
+          "tool": "peptide_table_passthrough",
+          "label": "Peptide-table Passthrough",
+          "blurb": "Accepts a ready-made list of peptides when one is supplied.",
+          "section": "genomic",
+          "tag": "Phase 1 \u00b7 Genomic analysis"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "tag": "Phase 2 \u00b7 Neoantigen prioritisation",
+      "title": "Presentation and immunogenicity",
+      "subtitle": "The mutated protein is processed and ranked for MHC-I presentation.",
+      "hotspots": [
+        {
+          "tool": "hla_typing",
+          "label": "HLA Typing",
+          "blurb": "Identifies the patient's HLA type \u2014 the MHC molecules that display peptides to T cells.",
+          "section": "genomic",
+          "tag": "Phase 1 \u00b7 Genomic analysis",
+          "metric": {
+            "name": "HLA 4-digit accuracy",
+            "value": "0.967",
+            "gate": ">= 0.8",
+            "lit": "OptiType class-I 4-digit \u22480.97\u20130.99 (Szolek 2014)",
+            "evidence": "OptiType on matched-normal exome",
+            "source": "reports/benchmarks/hugo2016_phase1_cohort_results.csv"
+          }
+        },
+        {
+          "tool": "epitope_generator",
+          "label": "Epitope Generator",
+          "blurb": "Slides a window across the protein to list every short peptide spanning the mutation.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "proteasomal_processing",
+          "label": "Proteasomal Processing Scorer",
+          "blurb": "Predicts where the cell's proteasome cuts the protein into peptides.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "mhc_binding",
+          "label": "MHC-I Binding Prediction",
+          "blurb": "Predicts how tightly each peptide binds the patient's MHC.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "bigmhc",
+          "label": "BigMHC Immunogenicity",
+          "blurb": "Predicts whether a displayed peptide will actually provoke a T-cell response.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation",
+          "metric": {
+            "name": "Immunogenicity signal (binding-controlled)",
+            "value": "0.640",
+            "gate": ">= 0.517",
+            "lit": "binder-matched ceiling AUROC 0.52\u20130.60 (ITSNdb); BigMHC-IM 0.56 on hard negatives",
+            "evidence": "iso-binding ablation, M\u00fcller 2023 hard negatives",
+            "source": "docs/BENCHMARK_RESULTS.md"
+          }
+        },
+        {
+          "tool": "immunogenicity",
+          "label": "Immunogenicity Scorer",
+          "blurb": "Scores each peptide's overall likelihood of triggering an immune response.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation",
+          "metric": {
+            "name": "Independent immunogenicity AUROC",
+            "value": "0.643",
+            "gate": ">= 0.5",
+            "lit": "standard tools 0.52\u20130.60 on binder-matched sets (ITSNdb)",
+            "evidence": "NEPdb, n = 11 positives (underpowered)",
+            "source": "docs/BENCHMARK_RESULTS.md"
+          }
+        },
+        {
+          "tool": "munis_presentation",
+          "label": "MUNIS (HLA-I presentation)",
+          "blurb": "A second, independent check on whether a peptide is displayed by the MHC.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation",
+          "metric": {
+            "name": "Presentation-rank agreement (Spearman \u03c1)",
+            "value": "0.603",
+            "gate": "",
+            "lit": "two independent EL predictors agree at \u03c1 \u2248 0.6 (expected; MUNIS/NetMHCpan AUC 0.980/0.962)",
+            "evidence": "MUNIS vs NetMHCpan EL-rank, 8400 held-out peptides",
+            "source": "docs/design_reports/005-munis-netmhcpan-validation.json"
+          }
+        },
+        {
+          "tool": "mhc_stability",
+          "label": "pMHC Stability Prediction",
+          "blurb": "Estimates how long a peptide stays bound to the MHC once loaded.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "pmhc_cofold",
+          "label": "pMHC Co-folding Orchestrator",
+          "blurb": "Models the 3-D structure of the peptide sitting in the MHC groove.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "modal_alphafold",
+          "label": "ESMFold / AlphaFold (Modal)",
+          "blurb": "Predicts the folded shape of the peptide\u2013MHC complex.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        },
+        {
+          "tool": "tscape",
+          "label": "T-SCAPE Immunogenicity",
+          "blurb": "An additional immunogenicity model contributing to the ensemble.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Neoantigen prioritisation"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "tag": "Phase 2 \u00b7 Candidate ranking",
+      "title": "Candidate selection",
+      "subtitle": "Composite prioritisation selects the immunogenic candidates.",
+      "hotspots": [
+        {
+          "tool": "neoantigen_priority",
+          "label": "Neoantigen Priority Scorer",
+          "blurb": "Multi-feature priority score combining binding affinity, immunogenicity, agretopicity, expression, structural exposure, and clonality for Phase 2 neoantigen ranking.",
+          "section": "mining",
+          "tag": "Phase 2 \u00b7 Candidate ranking"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "tag": "Phases 3\u20134 \u00b7 Sequence design",
+      "title": "Coding-sequence and UTR design",
+      "subtitle": "Selected peptides are encoded as an optimised mRNA construct.",
+      "hotspots": [
+        {
+          "tool": "rigorous_codon_optimizer",
+          "label": "Rigorous Codon Optimiser (Lagrangian)",
+          "blurb": "Phase 3 primary optimiser. Lagrangian relaxation over the synonymous codon graph: per-position argmax log(w) - lambda*gc with binary search on lambda to hit overall GC in [gc_lo, gc_hi]. Followed by local-window GC repair, uridine depletion, and restriction-site / homopolymer scrubbing. Closes the CAI ~0.90 gap that DNA Chisel's local search leaves on canine polyepitopes.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "codon_optimizer",
+          "label": "Codon Optimizer (DNA Chisel)",
+          "blurb": "Reverse-translates amino acid sequences to codon-optimised CDS. DNA Chisel with the Kazusa canine codon table, strict overall GC [0.40, 0.60] and loose per-100-nt window [0.30, 0.70], maximising CAI via use_best_codon. Graceful fallback returns None so callers can use the table-based approach.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "mrnaaid_wrapper",
+          "label": "mRNAid (Merck NAR 2024)",
+          "blurb": "Multi-objective CDS optimiser jointly optimising CAI, GC, MFE, and uridine depletion; produces N>=3 candidates natively. Optional dep \u2014 gracefully absent when not installed.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "codon_pair_bias",
+          "label": "Codon-Pair Bias (Coleman 2008)",
+          "blurb": "Computes mean Coleman codon-pair score (CPB) over adjacent codon pairs in a CDS sequence.  Acts as a soft tie-breaker in Phase 3 scoring (weight 0.05 by default, never overrides CAI / GC / MFE hard gates). Per-species CPS tables live at data/codon_pair_table_<species>.json.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "cds_minmax",
+          "label": "Phase 3 %MinMax Codon Profile",
+          "blurb": "Clarke & Clark 2008 sliding-window codon-usage profile. Reports windows biased toward common codons (+100 = pure max) vs rare codons (\u2212100 = pure min). Advisory; never gates clearance.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "rna_folding",
+          "label": "RNA Folding (ViennaRNA wrapper)",
+          "blurb": "Thin ViennaRNA wrapper. Uses the `viennarna` Python bindings (in-process) to compute minimum free energy and adjusted-MFE per 100 nt for codon and UTR optimisation in Phase 3/4.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "structure_prediction",
+          "label": "RNA Structure Prediction (ViennaRNA)",
+          "blurb": "ViennaRNA Python-bindings wrapper for MFE secondary-structure computation. Exposes compute_mfe, compute_amfe (MFE per 100 nt), and compute_mfe_window for subsequence analysis. Accepts DNA or RNA, any case; raises on sequences shorter than 10 nt. Used by CDS and UTR validation.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "modal_utr_lm",
+          "label": "UTR-LM (Modal GPU)",
+          "blurb": "Batched 5' UTR translation-efficiency scoring via the fine-tuned UTR-LM checkpoint on a Modal.com GPU container. Falls back to in-process inference when Modal credentials are absent.",
+          "section": "utr",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        },
+        {
+          "tool": "orf_scan",
+          "label": "Out-of-Frame ATG / uORF Scanner",
+          "blurb": "Finds ATG codons in frames +1/+2 relative to the main ORF start. Reports Kozak strength (Kozak 1987: -3 purine AND +4 G). Advisory only \u2014 never gates manufacturing_cleared.",
+          "section": "manufacturing",
+          "tag": "Phases 3\u20134 \u00b7 Sequence design"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "tag": "Phase 5 \u00b7 Manufacturing QC",
+      "title": "Manufacturing clearance",
+      "subtitle": "Hazard, degradation, toxicity and yield checks on the final construct.",
+      "hotspots": [
+        {
+          "tool": "restriction_scan",
+          "label": "Restriction Site Scanner",
+          "blurb": "Scans DNA for restriction enzyme recognition sites using Biopython's Bio.Restriction database (800+ enzymes). Exposes scan_restriction_sites (critical-enzymes subset) and scan_all_enzymes (full DB). Falls back to string matching against a minimal CRITICAL_ENZYMES list when Biopython is absent.",
+          "section": "manufacturing",
+          "tag": "Phase 5 \u00b7 Manufacturing QC"
+        },
+        {
+          "tool": "rna_degradation",
+          "label": "RNA Degradation Scorer",
+          "blurb": "Per-nucleotide degradation risk for the assembled construct body. Runs every available backend in an equal-weight ensemble: ViennaRNA-based window heuristic, RNAdegformer (He 2023, when weights are vendored), and DegScore (Leppek 2022, when weights are vendored). Hotspots are advisory, never gate manufacturing.",
+          "section": "manufacturing",
+          "tag": "Phase 5 \u00b7 Manufacturing QC"
+        },
+        {
+          "tool": "toxicity",
+          "label": "ToxinPred 3.0",
+          "blurb": "Polyepitope toxicity prediction (advisory). ML probability in [0, 1] that the translated polyepitope protein is toxic; never gates manufacturing clearance.",
+          "section": "manufacturing",
+          "tag": "Phase 5 \u00b7 Manufacturing QC"
+        },
+        {
+          "tool": "ivt_yield",
+          "label": "IVT Yield Estimator",
+          "blurb": "Deterministic T7 in-vitro-transcription yield heuristic (advisory): yield as percent of theoretical max from length, GC, start nucleotides, and cap analog. Never gates manufacturing clearance.",
+          "section": "manufacturing",
+          "tag": "Phase 5 \u00b7 Manufacturing QC"
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "tools_total": 34,
+    "tools_placed": 34,
+    "metrics_total": 17,
+    "metrics_with_lead_card": 5
+  }
+}
