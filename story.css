@@ -56,8 +56,8 @@ body {
 .rail .dot.on { background: var(--neon); border-color: var(--neon); }
 
 /* Hero */
-.hero { position: relative; z-index: 2; min-height: 100vh; display: grid;
-  place-items: center; text-align: center; padding: 10vh 6vw; }
+.hero { position: relative; z-index: 2; min-height: 100vh; min-height: 100svh;
+  display: grid; place-items: center; text-align: center; padding: 10vh 6vw; }
 .hero .kicker { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.24em;
   text-transform: uppercase; color: var(--ink-2); margin-bottom: 1.4rem; }
 .hero h1 { font-family: var(--serif); font-weight: 500;
@@ -77,8 +77,15 @@ body {
 .act--3 { height: 300vh; }
 .act--4 { height: 460vh; }
 .act--5 { height: 420vh; }
-.stage { position: sticky; top: 0; height: 100vh; width: 100%;
+/* svh, not vh: a mobile browser measures vh against the *largest* viewport (URL
+   bar hidden), so a 100vh sticky stage is taller than the screen and pushes every
+   bottom-anchored band below the fold until the user scrolls. svh is the smallest
+   viewport — stable, always visible, and it never resizes mid-scroll. */
+.stage { position: sticky; top: 0; height: 100vh; height: 100svh; width: 100%;
   display: grid; place-items: center; overflow: hidden; }
+/* A square box for a square viewBox — the scene is drawn into the middle of it
+   and the stage centres the box. Constrained viewports crop the viewBox to the
+   content (story_construct.js) and switch this to height:auto; see Responsive. */
 .stage svg { width: min(88vmin, 940px); height: min(88vmin, 940px); display: block; }
 
 /* Real molecular structure viewer (3Dmol.js) — full-bleed: the structure fills
@@ -239,10 +246,169 @@ body {
 .coda .more { margin-top: 2rem; font-family: var(--mono); font-size: 0.7rem;
   letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-2); }
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Responsive.
+
+   The desktop stage is three columns inside one sticky viewport: narrative on
+   the left, structure full-bleed through the middle, tools streaming down a
+   column on the right. That composition needs ~1000px — a caption column, a
+   tool column, and enough between them for a molecule to be the hero rather
+   than wallpaper. Below that there is only one column, so the stage restacks
+   into horizontal *bands* instead: tools swipe across the top, the structure
+   holds the middle, the narrative sits at the foot on a paper scrim.
+
+   The split is on width AND orientation, not width alone. A landscape phone
+   (844×390) is wide enough for the three columns but far too short for the
+   band stack, so it keeps the desktop composition with the chrome compacted.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── One column: portrait phones and portrait tablets ─────────────────────── */
+@media (max-width: 1023px) and (orientation: portrait) {
+  :root { --ctx-h: 42px; }
+
+  /* Context: the pipeline's name is the hero's job. In one column keep only the
+     part that actually changes as you scroll — the phase and its cohort. */
+  .context { padding: 0.45rem 5vw; gap: 0.05rem 0.55rem; flex-wrap: wrap;
+    font-size: 0.58rem; letter-spacing: 0.07em; line-height: 1.5; }
+  .context .sys, .context .spacer { display: none; }
+
+  /* Act rail: horizontal, at the foot. Its desktop home (left: 22px) is exactly
+     where the one-column caption now begins. */
+  .rail { left: 50%; right: auto; top: auto; bottom: 9px;
+    transform: translateX(-50%); flex-direction: row; gap: 9px; }
+
+  /* Tools: a swipeable strip across the top. As a column at 31vw each card is
+     ~120px — every tool name broken over three lines, on top of the caption. */
+  .flow { top: calc(var(--ctx-h) + 6px); left: 0; right: auto; width: 100%;
+    flex-direction: row; align-items: flex-start; gap: 0.45rem;
+    max-height: none; overflow-x: auto; overflow-y: hidden;
+    padding: 2px 5vw 8px; pointer-events: auto;
+    scroll-snap-type: x proximity; scrollbar-width: none; }
+  .flow::-webkit-scrollbar { display: none; }
+  .infocard { flex: 0 0 min(68vw, 268px); scroll-snap-align: start; }
+  .infocard.open .ic-body { max-height: 40svh; overflow-y: auto; }
+
+  /* Collapsed, a card is one line: the tool and its number. Three stacked lines
+     (tag / name / "show more") cost ~95px of a ~790px stage before the structure
+     got any. `display: contents` lifts the tag and badge out of .ic-top so the
+     head can lay them out directly — the tag then drops onto its own line only
+     once the card is open, which is where it earns its space: most cards repeat
+     the phase already in the context bar, but a few (HLA Typing inside act 2)
+     borrow a tool from another phase and that is worth saying. */
+  .ic-head { display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 0.1rem 0.45rem; padding: 0.44rem 0.6rem; }
+  .ic-top { display: contents; }
+  .ic-title { order: 0; flex: 1 1 auto; font-size: 0.84rem; margin: 0; }
+  .ic-badge { order: 1; flex: 0 0 auto; margin-left: 0; font-size: 0.68rem; }
+  .ic-more { order: 2; flex: 0 0 auto; font-size: 0; }
+  .ic-more::after { content: "▾"; font-size: 0.66rem; color: var(--neon); }
+  .infocard.open .ic-more::after { content: "▴"; }
+  .ic-tag { order: 3; flex: 1 0 100%; display: none; }
+  .infocard.open .ic-tag { display: block; margin-top: 0.15rem; }
+  .ic-body { padding: 0 0.6rem; }
+
+  /* Narrative: full width at the foot. With the structure filling the column
+     there is no longer an empty margin to sit in, so it reads over a paper
+     scrim rising from the bottom rather than a per-glyph halo. */
+  .captions { z-index: 10; background: linear-gradient(to top,
+      var(--paper) 0%, rgba(253,252,250,0.95) 30%, rgba(253,252,250,0) 62%); }
+  /* Acts 1–2 need that reach — a structure runs the full bleed behind the text.
+     Acts 3–5 put a labelled diagram in the same space and a scrim that tall
+     ghosts the QC gates and the clearance stamp, so they get a short one; the
+     scene is lifted clear of the narrative rather than veiled under it. */
+  #act-3 .captions, #act-4 .captions, #act-5 .captions {
+    top: auto; height: 34%; background: linear-gradient(to top,
+      var(--paper) 0%, var(--paper) 34%, rgba(253,252,250,0) 100%); }
+  .caption { left: 5vw; right: 5vw; bottom: 11vh; max-width: none; }
+  .caption h2 { font-size: clamp(1.15rem, 4.5vw, 1.7rem); }
+  .caption p { font-size: 0.8rem; color: var(--ink-2); margin: 0.55rem 0 0; }
+
+  /* Structure credit tucks under the narrative; the scanner label takes the top
+     band — its cards only stream in as it fades, and they draw over it. */
+  .mol-caption { bottom: 4.2vh; left: 5vw; right: 5vw; transform: none;
+    text-align: center; }
+  .scanlabel { top: calc(var(--ctx-h) + 8px); left: 5vw; right: 5vw;
+    max-width: none; text-align: left; }
+
+  /* The smoke vignette is an ellipse tuned to a wide viewport; in one column the
+     structure is fitted to the *width* (mol.js), so fade it in a circle that
+     tracks the same axis — otherwise it smokes out the molecule it is framing. */
+  #act-1 .stage::after, #act-2 .stage::after {
+    background: radial-gradient(circle 62vw at 50% 46%,
+      rgba(253,252,250,0) 0%, rgba(253,252,250,0) 34%,
+      rgba(253,252,250,0.62) 62%, var(--paper) 84%); }
+
+  /* Acts 3–5 swap to the 460-unit compact geometry, with the viewBox cropped to
+     the content — so size off the width and let the height follow, capped so a
+     tall scene letterboxes rather than running under the narrative. The stage
+     centres the margin box, so margin-bottom lifts the scene by half its value,
+     seating it in the band between the tool strip and the narrative. */
+  html.compact-scene .stage svg { width: min(96vw, 560px); height: auto;
+    max-height: 52svh; margin-bottom: 13vh; }
+}
+
+/* ── Short landscape: phones on their side, squat desktop windows ─────────── */
+/* Wide enough for the three columns, far too short for them at desktop scale. */
+@media (orientation: landscape) and (max-height: 620px) {
+  .context { padding: 0.4rem 3vw; font-size: 0.58rem; }
+  .rail { left: 12px; gap: 9px; }
+  .flow { top: 7vh; right: 1.4vw; width: min(210px, 26vw); max-height: 86svh; gap: 0.4rem; }
+  .ic-title { font-size: 0.82rem; }
+  .caption { left: 3.5vw; bottom: 7vh; max-width: 25ch; }
+  .caption h2 { font-size: clamp(1.02rem, 2.3vw, 1.4rem); }
+  .caption p { font-size: 0.76rem; margin: 0.4rem 0 0; }
+  .scanlabel { top: 8vh; right: 30vw; }
+  .mol-caption { bottom: 2.5vh; }
+  /* Acts 1–2 are full-bleed structures and read fine behind the two columns, but
+     acts 3–5 are labelled diagrams — they have to sit in the gap *between* the
+     narrative and the tool column, so they get the compact geometry too. vmin
+     here is the short axis, which is why 88vmin was rendering them at ~343px. */
+  html.compact-scene .stage svg { width: min(44vw, 460px); height: auto; max-height: 86svh; }
+}
+
+/* ── Narrow landscape that is still tall enough for the three columns ─────── */
+@media (max-width: 1023px) and (orientation: landscape) and (min-height: 621px) {
+  .flow { width: min(280px, 31vw); }
+  .caption { max-width: 30ch; }
+}
+
+/* ── No motion ─────────────────────────────────────────────────────────────
+   Without the scrubbed timelines there is nothing to scroll *through*, so the
+   sticky stage and its 420vh of runway have no job. Only act 1 used to collapse,
+   which left acts 2–5 as ~360vh of blank paper each with their content stranded
+   off the top of the act — on a phone those screens were simply empty. Each act
+   becomes a plain stacked section instead: structure, then its tools, then the
+   narrative. A readable document rather than a frozen frame of an animation.
+   ────────────────────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .act--1 { height: auto; } .stage { position: relative; height: 100vh; }
+  .act--1, .act--2, .act--3, .act--4, .act--5 { height: auto; }
+  .stage { position: relative; height: auto; overflow: visible;
+    padding: calc(var(--ctx-h, 52px) + 4vh) 5vw 6vh; gap: 1.6rem; }
+  /* Sized to the stage's content box, not the viewport: the stage is a grid, and
+     an item wider than the box (96vw against 5vw padding) widens the whole
+     implicit column — which drags the tool cards off-screen with it. */
+  html.compact-scene .stage svg, .stage svg { width: min(90vw, 940px); height: auto;
+    max-height: none; margin-bottom: 0; }
+  #stage2-svg { display: none; }                  /* act 2 is carried by structures */
+
+  /* the structures are full-bleed absolutes in the scrolling build; stacked, they
+     have to take real space, and there is no camera move to blend into paper */
+  #dna-viewer, #protein-viewer, #mhc-viewer { position: relative; inset: auto;
+    width: 100%; height: 58svh; }
+  #act-1 .stage::after, #act-2 .stage::after { display: none; }
+  .mol-caption { position: static; transform: none; text-align: center;
+    left: auto; right: auto; margin: 0; }
+
+  /* back to a column — and align-items governs the *cross* axis, so the strip's
+     flex-start would leave every card shrink-wrapped and overflowing the page */
+  .flow { position: static; width: auto; max-width: 44ch; max-height: none;
+    flex-direction: column; align-items: stretch; overflow: visible;
+    padding: 0; margin: 0 auto; }
+  .infocard { flex: none; opacity: 1 !important; transform: none !important; }
+
+  .captions { position: static; height: auto; padding: 0; background: none; }
   .caption { opacity: 1 !important; transform: none !important; position: static;
-    margin: 0 auto; text-align: center; max-width: 42ch; }
-  .captions { position: relative; padding: 4vh 0; }
+    left: auto; right: auto; margin: 0 auto 2.5vh; text-align: center; max-width: 42ch; }
+  .rail { display: none; }
   .hotspot { opacity: 1 !important; } .scrollcue { display: none; }
 }
